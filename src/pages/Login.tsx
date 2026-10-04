@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, ArrowRight, ArrowLeft, Globe } from 'lucide-react'
+import { Eye, EyeOff, ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import { loginSchema } from '../lib/validation'
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
 
   const { login } = useAuth()
   const { language, setLanguage } = useLanguage()
@@ -17,7 +19,21 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    login(email || 'juan@email.com')
+    const result = loginSchema.safeParse({ email, password, rememberMe })
+    if (!result.success) {
+      const fieldErrors: { email?: string; password?: string } = {}
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as 'email' | 'password'
+        if (field && !fieldErrors[field]) {
+          fieldErrors[field] = issue.message
+        }
+      })
+      setErrors(fieldErrors)
+      return
+    }
+
+    setErrors({})
+    login(email)
     navigate('/shop')
   }
 
@@ -115,10 +131,19 @@ export default function Login() {
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
+                  }}
                   placeholder="juan@email.com"
-                  className="input-luxury"
+                  className={`input-luxury ${errors.email ? 'border-red-500 focus:border-red-600' : ''}`}
                 />
+                {errors.email && (
+                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle size={13} />
+                    <span>{errors.email}</span>
+                  </p>
+                )}
               </div>
 
               {/* Password */}
@@ -130,9 +155,12 @@ export default function Login() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
+                    }}
                     placeholder="••••••••"
-                    className="input-luxury pr-10"
+                    className={`input-luxury pr-10 ${errors.password ? 'border-red-500 focus:border-red-600' : ''}`}
                   />
                   <button
                     type="button"
@@ -143,6 +171,12 @@ export default function Login() {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle size={13} />
+                    <span>{errors.password}</span>
+                  </p>
+                )}
               </div>
 
               {/* Remember Me + Forgot */}

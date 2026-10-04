@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Eye, EyeOff, ArrowRight, ArrowLeft, AlertCircle } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../context/LanguageContext'
+import { registerSchema } from '../lib/validation'
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
@@ -11,6 +12,16 @@ export default function Register() {
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [errors, setErrors] = useState<{
+    firstName?: string
+    lastName?: string
+    email?: string
+    phone?: string
+    password?: string
+    confirmPassword?: string
+  }>({})
 
   const { login } = useAuth()
   const { language, setLanguage } = useLanguage()
@@ -19,7 +30,29 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    login(email || 'newmember@email.com', `${firstName || 'New'} ${lastName || 'Member'}`)
+    const result = registerSchema.safeParse({
+      firstName,
+      lastName,
+      email,
+      phone,
+      password,
+      confirmPassword,
+    })
+
+    if (!result.success) {
+      const fieldErrors: typeof errors = {}
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof typeof errors
+        if (field && !fieldErrors[field]) {
+          fieldErrors[field] = issue.message
+        }
+      })
+      setErrors(fieldErrors)
+      return
+    }
+
+    setErrors({})
+    login(email, `${firstName} ${lastName}`)
     navigate('/shop')
   }
 
@@ -117,12 +150,20 @@ export default function Register() {
                   </label>
                   <input
                     type="text"
-                    required
                     value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    onChange={(e) => {
+                      setFirstName(e.target.value)
+                      if (errors.firstName) setErrors((prev) => ({ ...prev, firstName: undefined }))
+                    }}
                     placeholder="Juan"
-                    className="input-luxury"
+                    className={`input-luxury ${errors.firstName ? 'border-red-500' : ''}`}
                   />
+                  {errors.firstName && (
+                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                      <AlertCircle size={12} />
+                      <span>{errors.firstName}</span>
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="text-subheading text-stone-600 block mb-1.5">
@@ -130,12 +171,20 @@ export default function Register() {
                   </label>
                   <input
                     type="text"
-                    required
                     value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    onChange={(e) => {
+                      setLastName(e.target.value)
+                      if (errors.lastName) setErrors((prev) => ({ ...prev, lastName: undefined }))
+                    }}
                     placeholder="Dela Cruz"
-                    className="input-luxury"
+                    className={`input-luxury ${errors.lastName ? 'border-red-500' : ''}`}
                   />
+                  {errors.lastName && (
+                    <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                      <AlertCircle size={12} />
+                      <span>{errors.lastName}</span>
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -146,12 +195,20 @@ export default function Register() {
                 </label>
                 <input
                   type="email"
-                  required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value)
+                    if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
+                  }}
                   placeholder="juan@email.com"
-                  className="input-luxury"
+                  className={`input-luxury ${errors.email ? 'border-red-500' : ''}`}
                 />
+                {errors.email && (
+                  <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    <span>{errors.email}</span>
+                  </p>
+                )}
               </div>
 
               {/* Contact Number */}
@@ -162,10 +219,19 @@ export default function Register() {
                 <input
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+63 9XX XXX XXXX"
-                  className="input-luxury"
+                  onChange={(e) => {
+                    setPhone(e.target.value)
+                    if (errors.phone) setErrors((prev) => ({ ...prev, phone: undefined }))
+                  }}
+                  placeholder="+63 912 345 6789"
+                  className={`input-luxury ${errors.phone ? 'border-red-500' : ''}`}
                 />
+                {errors.phone && (
+                  <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    <span>{errors.phone}</span>
+                  </p>
+                )}
               </div>
 
               {/* Password */}
@@ -176,9 +242,13 @@ export default function Register() {
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    required
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value)
+                      if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
+                    }}
                     placeholder="••••••••"
-                    className="input-luxury pr-10"
+                    className={`input-luxury pr-10 ${errors.password ? 'border-red-500' : ''}`}
                   />
                   <button
                     type="button"
@@ -189,6 +259,12 @@ export default function Register() {
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    <span>{errors.password}</span>
+                  </p>
+                )}
               </div>
 
               {/* Confirm Password */}
@@ -199,9 +275,13 @@ export default function Register() {
                 <div className="relative">
                   <input
                     type={showConfirm ? 'text' : 'password'}
-                    required
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value)
+                      if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: undefined }))
+                    }}
                     placeholder="••••••••"
-                    className="input-luxury pr-10"
+                    className={`input-luxury pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
                   />
                   <button
                     type="button"
@@ -212,6 +292,12 @@ export default function Register() {
                     {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                    <AlertCircle size={12} />
+                    <span>{errors.confirmPassword}</span>
+                  </p>
+                )}
               </div>
 
               {/* Register Button */}

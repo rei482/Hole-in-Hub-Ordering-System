@@ -26,6 +26,18 @@ export const registerSchema = z
 
 export type RegisterFormValues = z.infer<typeof registerSchema>
 
+export const deliveryInfoSchema = z.object({
+  firstName: z.string().min(2, 'First name is required'),
+  lastName: z.string().min(2, 'Last name is required'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().min(10, 'Contact number must be at least 10 digits'),
+  address: z.string().min(5, 'Delivery address is required'),
+  city: z.string().min(2, 'City is required'),
+  postalCode: z.string().min(4, 'Postal code is required'),
+})
+
+export type DeliveryInfoFormValues = z.infer<typeof deliveryInfoSchema>
+
 export const checkoutSchema = z.object({
   fullName: z.string().min(3, 'Full name is required'),
   phone: z.string().min(10, 'Valid contact number is required'),

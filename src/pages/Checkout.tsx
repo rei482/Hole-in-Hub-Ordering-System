@@ -7,8 +7,10 @@ import {
   Truck,
   Check,
   ChevronRight,
+  AlertCircle,
 } from 'lucide-react'
 import { cartItems, categories } from '../data/products'
+import { deliveryInfoSchema } from '../lib/validation'
 
 const steps = [
   { id: 1, name: 'Delivery Information', icon: MapPin },
@@ -19,6 +21,33 @@ const steps = [
 
 export default function Checkout() {
   const [currentStep, setCurrentStep] = useState(1)
+  const [delivery, setDelivery] = useState({
+    firstName: 'Juan Dela',
+    lastName: 'Cruz',
+    email: 'juan@email.com',
+    phone: '+63 912 345 6789',
+    address: '123 Ayala Avenue',
+    city: 'Makati City',
+    postalCode: '1200',
+  })
+  const [deliveryErrors, setDeliveryErrors] = useState<Partial<Record<keyof typeof delivery, string>>>({})
+
+  const handleProceedToShipping = () => {
+    const result = deliveryInfoSchema.safeParse(delivery)
+    if (!result.success) {
+      const errs: Partial<Record<keyof typeof delivery, string>> = {}
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof typeof delivery
+        if (field && !errs[field]) {
+          errs[field] = issue.message
+        }
+      })
+      setDeliveryErrors(errs)
+      return
+    }
+    setDeliveryErrors({})
+    setCurrentStep(2)
+  }
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
@@ -111,9 +140,19 @@ export default function Checkout() {
                       </label>
                       <input
                         type="text"
-                        defaultValue="Juan Dela"
-                        className="input-bordered"
+                        value={delivery.firstName}
+                        onChange={(e) => {
+                          setDelivery((prev) => ({ ...prev, firstName: e.target.value }))
+                          if (deliveryErrors.firstName) setDeliveryErrors((prev) => ({ ...prev, firstName: undefined }))
+                        }}
+                        className={`input-bordered ${deliveryErrors.firstName ? 'border-red-500' : ''}`}
                       />
+                      {deliveryErrors.firstName && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle size={12} />
+                          <span>{deliveryErrors.firstName}</span>
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="text-subheading text-stone-600 block mb-2">
@@ -121,9 +160,19 @@ export default function Checkout() {
                       </label>
                       <input
                         type="text"
-                        defaultValue="Cruz"
-                        className="input-bordered"
+                        value={delivery.lastName}
+                        onChange={(e) => {
+                          setDelivery((prev) => ({ ...prev, lastName: e.target.value }))
+                          if (deliveryErrors.lastName) setDeliveryErrors((prev) => ({ ...prev, lastName: undefined }))
+                        }}
+                        className={`input-bordered ${deliveryErrors.lastName ? 'border-red-500' : ''}`}
                       />
+                      {deliveryErrors.lastName && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle size={12} />
+                          <span>{deliveryErrors.lastName}</span>
+                        </p>
+                      )}
                     </div>
                     <div className="md:col-span-2">
                       <label className="text-subheading text-stone-600 block mb-2">
@@ -131,9 +180,19 @@ export default function Checkout() {
                       </label>
                       <input
                         type="email"
-                        defaultValue="juan@email.com"
-                        className="input-bordered"
+                        value={delivery.email}
+                        onChange={(e) => {
+                          setDelivery((prev) => ({ ...prev, email: e.target.value }))
+                          if (deliveryErrors.email) setDeliveryErrors((prev) => ({ ...prev, email: undefined }))
+                        }}
+                        className={`input-bordered ${deliveryErrors.email ? 'border-red-500' : ''}`}
                       />
+                      {deliveryErrors.email && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle size={12} />
+                          <span>{deliveryErrors.email}</span>
+                        </p>
+                      )}
                     </div>
                     <div className="md:col-span-2">
                       <label className="text-subheading text-stone-600 block mb-2">
@@ -141,9 +200,19 @@ export default function Checkout() {
                       </label>
                       <input
                         type="tel"
-                        defaultValue="+63 912 345 6789"
-                        className="input-bordered"
+                        value={delivery.phone}
+                        onChange={(e) => {
+                          setDelivery((prev) => ({ ...prev, phone: e.target.value }))
+                          if (deliveryErrors.phone) setDeliveryErrors((prev) => ({ ...prev, phone: undefined }))
+                        }}
+                        className={`input-bordered ${deliveryErrors.phone ? 'border-red-500' : ''}`}
                       />
+                      {deliveryErrors.phone && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle size={12} />
+                          <span>{deliveryErrors.phone}</span>
+                        </p>
+                      )}
                     </div>
                     <div className="md:col-span-2">
                       <label className="text-subheading text-stone-600 block mb-2">
@@ -151,9 +220,19 @@ export default function Checkout() {
                       </label>
                       <input
                         type="text"
-                        defaultValue="123 Ayala Avenue"
-                        className="input-bordered"
+                        value={delivery.address}
+                        onChange={(e) => {
+                          setDelivery((prev) => ({ ...prev, address: e.target.value }))
+                          if (deliveryErrors.address) setDeliveryErrors((prev) => ({ ...prev, address: undefined }))
+                        }}
+                        className={`input-bordered ${deliveryErrors.address ? 'border-red-500' : ''}`}
                       />
+                      {deliveryErrors.address && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle size={12} />
+                          <span>{deliveryErrors.address}</span>
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="text-subheading text-stone-600 block mb-2">
@@ -161,9 +240,19 @@ export default function Checkout() {
                       </label>
                       <input
                         type="text"
-                        defaultValue="Makati City"
-                        className="input-bordered"
+                        value={delivery.city}
+                        onChange={(e) => {
+                          setDelivery((prev) => ({ ...prev, city: e.target.value }))
+                          if (deliveryErrors.city) setDeliveryErrors((prev) => ({ ...prev, city: undefined }))
+                        }}
+                        className={`input-bordered ${deliveryErrors.city ? 'border-red-500' : ''}`}
                       />
+                      {deliveryErrors.city && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle size={12} />
+                          <span>{deliveryErrors.city}</span>
+                        </p>
+                      )}
                     </div>
                     <div>
                       <label className="text-subheading text-stone-600 block mb-2">
@@ -171,9 +260,19 @@ export default function Checkout() {
                       </label>
                       <input
                         type="text"
-                        defaultValue="1200"
-                        className="input-bordered"
+                        value={delivery.postalCode}
+                        onChange={(e) => {
+                          setDelivery((prev) => ({ ...prev, postalCode: e.target.value }))
+                          if (deliveryErrors.postalCode) setDeliveryErrors((prev) => ({ ...prev, postalCode: undefined }))
+                        }}
+                        className={`input-bordered ${deliveryErrors.postalCode ? 'border-red-500' : ''}`}
                       />
+                      {deliveryErrors.postalCode && (
+                        <p className="mt-1 text-xs text-red-600 flex items-center gap-1">
+                          <AlertCircle size={12} />
+                          <span>{deliveryErrors.postalCode}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -185,7 +284,7 @@ export default function Checkout() {
                 </div>
 
                 <button
-                  onClick={() => setCurrentStep(2)}
+                  onClick={handleProceedToShipping}
                   className="btn-primary"
                 >
                   Continue to Shipping
