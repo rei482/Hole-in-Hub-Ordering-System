@@ -13,6 +13,8 @@ import {
   Truck,
   Calendar,
   ArrowRight,
+  X,
+  Trash2,
 } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
 import { useAuth } from '../context/AuthContext'
@@ -36,6 +38,63 @@ export default function Profile() {
     memberSince: 'September 2026',
     membershipTier: user?.memberTier || 'Clubhouse Gold Member',
   })
+
+  interface AddressItem {
+    id: string
+    name: string
+    tag: string
+    address: string
+    city: string
+    phone: string
+    isDefault?: boolean
+  }
+
+  const [addresses, setAddresses] = useState<AddressItem[]>([
+    {
+      id: 'addr-1',
+      name: user?.name || 'Juan Dela Cruz',
+      tag: 'Default Pickup',
+      address: '3rd Floor, EK Building, 50 Holy Spirit Dr, Quezon City, 1127 Metro Manila',
+      city: 'Quezon City',
+      phone: '+63 969 265 4976',
+      isDefault: true,
+    },
+  ])
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [newAddr, setNewAddr] = useState({
+    name: '',
+    tag: 'Home',
+    address: '',
+    city: '',
+    phone: '',
+  })
+  const [addrError, setAddrError] = useState('')
+
+  const handleAddAddress = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newAddr.name.trim() || !newAddr.address.trim() || !newAddr.city.trim() || !newAddr.phone.trim()) {
+      setAddrError(isKo ? '모든 배송지 정보를 입력해 주세요.' : 'Please fill in all address details.')
+      return
+    }
+    const item: AddressItem = {
+      id: `addr-${Date.now()}`,
+      name: newAddr.name,
+      tag: newAddr.tag || 'Home',
+      address: newAddr.address,
+      city: newAddr.city,
+      phone: newAddr.phone,
+      isDefault: addresses.length === 0,
+    }
+    setAddresses([...addresses, item])
+    setNewAddr({ name: '', tag: 'Home', address: '', city: '', phone: '' })
+    setAddrError('')
+    setIsAddModalOpen(false)
+  }
+
+  const handleDeleteAddress = (id: string) => {
+    setAddresses(addresses.filter((a) => a.id !== id))
+  }
 
   if (!isLoggedIn) {
     return (
@@ -284,32 +343,164 @@ export default function Profile() {
                       {isKo ? '온라인 주문 및 클럽하우스 픽업 주소' : 'Primary delivery destinations and clubhouse merch pickup'}
                     </p>
                   </div>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181512] text-white text-xs font-semibold uppercase tracking-wider hover:bg-espresso-700 transition-colors cursor-pointer">
+                  <button
+                    onClick={() => {
+                      setAddrError('')
+                      setIsAddModalOpen(true)
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#181512] text-white text-xs font-semibold uppercase tracking-wider hover:bg-espresso-700 transition-colors cursor-pointer"
+                  >
                     <Plus size={13} />
                     {isKo ? '새 주소 추가' : 'Add New'}
                   </button>
                 </div>
 
+                {/* Addresses List */}
                 <div className="space-y-4">
-                  {/* Default Address: EK Building QC */}
-                  <div className="border border-stone-200 p-5 bg-[#FAF7F2] relative">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-espresso-900">Juan Dela Cruz</span>
-                        <span className="bg-[#D85A2A] text-white text-[9px] font-bold tracking-wider uppercase px-2 py-0.5">
-                          {isKo ? '기본 픽업지' : 'Default Pickup'}
-                        </span>
+                  {addresses.map((addr) => (
+                    <div key={addr.id} className="border border-stone-200 p-5 bg-[#FAF7F2] relative transition-all hover:border-stone-400">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-sm text-espresso-900">{addr.name}</span>
+                          <span className="bg-[#D85A2A] text-white text-[9px] font-bold tracking-wider uppercase px-2 py-0.5">
+                            {addr.tag}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          {!addr.isDefault && (
+                            <button
+                              onClick={() => handleDeleteAddress(addr.id)}
+                              className="text-stone-400 hover:text-red-600 transition-colors cursor-pointer p-1"
+                              title="Delete address"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-xs text-[#D85A2A] font-semibold cursor-pointer hover:underline">
-                        {isKo ? '수정' : 'Edit'}
-                      </span>
+                      <p className="text-xs text-stone-600 leading-relaxed mb-2">
+                        {addr.address}, {addr.city}
+                      </p>
+                      <p className="text-xs text-stone-500">Contact: {addr.phone}</p>
                     </div>
-                    <p className="text-xs text-stone-600 leading-relaxed mb-2">
-                      3rd Floor, EK Building, 50 Holy Spirit Dr, Quezon City, 1127 Metro Manila
-                    </p>
-                    <p className="text-xs text-stone-500">Contact: +63 969 265 4976</p>
-                  </div>
+                  ))}
                 </div>
+
+                {/* Add Address Modal */}
+                {isAddModalOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
+                    <div className="bg-white border border-stone-200 w-full max-w-md p-6 lg:p-8 shadow-2xl relative">
+                      <div className="flex items-center justify-between pb-4 mb-4 border-b border-stone-200">
+                        <h3 className="font-luxury text-xl text-espresso-900">
+                          {isKo ? '새 배송지 추가' : 'Add New Address'}
+                        </h3>
+                        <button
+                          onClick={() => setIsAddModalOpen(false)}
+                          className="text-stone-400 hover:text-espresso-900 transition-colors cursor-pointer p-1"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleAddAddress} className="space-y-4">
+                        {addrError && (
+                          <div className="p-2.5 bg-red-50 text-red-700 text-xs border border-red-200">
+                            {addrError}
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-stone-600 block mb-1">
+                            {isKo ? '수령인' : 'Recipient Name'}
+                          </label>
+                          <input
+                            type="text"
+                            value={newAddr.name}
+                            onChange={(e) => setNewAddr({ ...newAddr, name: e.target.value })}
+                            placeholder="Juan Dela Cruz"
+                            className="input-luxury text-sm"
+                            required
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-stone-600 block mb-1">
+                              {isKo ? '주소 구분' : 'Label / Tag'}
+                            </label>
+                            <select
+                              value={newAddr.tag}
+                              onChange={(e) => setNewAddr({ ...newAddr, tag: e.target.value })}
+                              className="input-luxury text-sm"
+                            >
+                              <option value="Home">Home</option>
+                              <option value="Office">Office</option>
+                              <option value="Clubhouse">Clubhouse</option>
+                              <option value="Golf Resort">Golf Resort</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-stone-600 block mb-1">
+                              {isKo ? '연락처' : 'Contact Phone'}
+                            </label>
+                            <input
+                              type="tel"
+                              value={newAddr.phone}
+                              onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })}
+                              placeholder="+63 9XX XXX XXXX"
+                              className="input-luxury text-sm"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-stone-600 block mb-1">
+                            {isKo ? '상세 주소' : 'Street Address'}
+                          </label>
+                          <input
+                            type="text"
+                            value={newAddr.address}
+                            onChange={(e) => setNewAddr({ ...newAddr, address: e.target.value })}
+                            placeholder="Unit / House No., Street, Barangay"
+                            className="input-luxury text-sm"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-stone-600 block mb-1">
+                            {isKo ? '도시 / 우편번호' : 'City / Region'}
+                          </label>
+                          <input
+                            type="text"
+                            value={newAddr.city}
+                            onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })}
+                            placeholder="e.g. Makati City, 1200 Metro Manila"
+                            className="input-luxury text-sm"
+                            required
+                          />
+                        </div>
+
+                        <div className="pt-2 flex items-center justify-end gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setIsAddModalOpen(false)}
+                            className="px-4 py-2 border border-stone-300 text-stone-700 text-xs font-semibold uppercase tracking-wider hover:bg-stone-50 transition-colors cursor-pointer"
+                          >
+                            {isKo ? '취소' : 'Cancel'}
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-5 py-2 bg-[#181512] hover:bg-black text-white text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                          >
+                            {isKo ? '주소 저장' : 'Save Address'}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

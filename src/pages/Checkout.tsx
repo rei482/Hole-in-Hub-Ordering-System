@@ -8,6 +8,7 @@ import {
   Check,
   ChevronRight,
   AlertCircle,
+  X,
 } from 'lucide-react'
 import { cartItems, categories } from '../data/products'
 import { deliveryInfoSchema } from '../lib/validation'
@@ -31,6 +32,7 @@ export default function Checkout() {
     postalCode: '1200',
   })
   const [deliveryErrors, setDeliveryErrors] = useState<Partial<Record<keyof typeof delivery, string>>>({})
+  const [isChangeAddressOpen, setIsChangeAddressOpen] = useState(false)
 
   const handleProceedToShipping = () => {
     const result = deliveryInfoSchema.safeParse(delivery)
@@ -277,11 +279,117 @@ export default function Checkout() {
                   </div>
 
                   <div className="mt-6">
-                    <button className="text-xs tracking-[0.12em] uppercase font-medium text-hermes-500 hover:text-hermes-600 transition-colors">
+                    <button
+                      type="button"
+                      onClick={() => setIsChangeAddressOpen(true)}
+                      className="text-xs tracking-[0.12em] uppercase font-medium text-hermes-500 hover:text-hermes-600 transition-colors cursor-pointer"
+                    >
                       + Change Address
                     </button>
                   </div>
                 </div>
+
+                {/* Change Address Modal */}
+                {isChangeAddressOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in">
+                    <div className="bg-white border border-stone-200 w-full max-w-md p-6 lg:p-8 shadow-2xl relative">
+                      <div className="flex items-center justify-between pb-4 mb-4 border-b border-stone-200">
+                        <h3 className="font-luxury text-xl text-espresso-900">
+                          Select Delivery Address
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setIsChangeAddressOpen(false)}
+                          className="text-stone-400 hover:text-espresso-900 transition-colors cursor-pointer p-1"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <div className="space-y-3 mb-6">
+                        {/* Option 1: Makati City */}
+                        <div
+                          onClick={() => {
+                            setDelivery({
+                              firstName: 'Juan Dela',
+                              lastName: 'Cruz',
+                              email: 'juan@email.com',
+                              phone: '+63 912 345 6789',
+                              address: '123 Ayala Avenue',
+                              city: 'Makati City',
+                              postalCode: '1200',
+                            })
+                            setDeliveryErrors({})
+                            setIsChangeAddressOpen(false)
+                          }}
+                          className="p-4 border border-stone-200 hover:border-espresso-900 bg-[#FAF7F2] cursor-pointer transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-bold text-xs text-espresso-900">Ayala Avenue (Primary Residence)</span>
+                            <span className="text-[10px] bg-stone-200 text-stone-700 px-2 py-0.5 font-bold uppercase">Home</span>
+                          </div>
+                          <p className="text-xs text-stone-600">123 Ayala Avenue, Makati City 1200</p>
+                          <p className="text-xs text-stone-400 mt-1">+63 912 345 6789</p>
+                        </div>
+
+                        {/* Option 2: Quezon City Clubhouse */}
+                        <div
+                          onClick={() => {
+                            setDelivery({
+                              firstName: 'Juan Dela',
+                              lastName: 'Cruz',
+                              email: 'juan@email.com',
+                              phone: '+63 969 265 4976',
+                              address: '3rd Floor, EK Building, 50 Holy Spirit Dr',
+                              city: 'Quezon City',
+                              postalCode: '1127',
+                            })
+                            setDeliveryErrors({})
+                            setIsChangeAddressOpen(false)
+                          }}
+                          className="p-4 border border-stone-200 hover:border-espresso-900 bg-[#FAF7F2] cursor-pointer transition-colors"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-bold text-xs text-espresso-900">EK Building (Clubhouse Pickup)</span>
+                            <span className="text-[10px] bg-[#D85A2A] text-white px-2 py-0.5 font-bold uppercase">Pickup</span>
+                          </div>
+                          <p className="text-xs text-stone-600">3rd Floor, EK Building, 50 Holy Spirit Dr, Quezon City 1127</p>
+                          <p className="text-xs text-stone-400 mt-1">+63 969 265 4976</p>
+                        </div>
+
+                        {/* Option 3: Custom / Clear */}
+                        <div
+                          onClick={() => {
+                            setDelivery({
+                              firstName: '',
+                              lastName: '',
+                              email: '',
+                              phone: '',
+                              address: '',
+                              city: '',
+                              postalCode: '',
+                            })
+                            setDeliveryErrors({})
+                            setIsChangeAddressOpen(false)
+                          }}
+                          className="p-4 border border-dashed border-stone-300 hover:border-stone-800 bg-white cursor-pointer transition-colors text-center"
+                        >
+                          <span className="text-xs font-semibold text-espresso-900">+ Enter a New Address</span>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setIsChangeAddressOpen(false)}
+                          className="px-4 py-2 border border-stone-300 text-stone-700 text-xs font-semibold uppercase tracking-wider hover:bg-stone-50 transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <button
                   onClick={handleProceedToShipping}
@@ -433,12 +541,12 @@ export default function Checkout() {
                       Deliver To
                     </h3>
                     <p className="text-sm text-espresso-900 font-medium">
-                      Juan Dela Cruz
+                      {delivery.firstName} {delivery.lastName}
                     </p>
                     <p className="text-sm text-stone-500">
-                      123 Ayala Avenue, Makati City 1200
+                      {delivery.address}, {delivery.city} {delivery.postalCode}
                     </p>
-                    <p className="text-sm text-stone-500">+63 912 345 6789</p>
+                    <p className="text-sm text-stone-500">{delivery.phone}</p>
                   </div>
 
                   {/* Items */}
