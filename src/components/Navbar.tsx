@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Search, User, ShoppingBag, Menu, X, Globe } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -9,6 +10,7 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const location = useLocation()
   const { language, setLanguage, t } = useLanguage()
+  const { user, isLoggedIn } = useAuth()
 
   const navLinks = [
     { name: t('nav.home'), path: '/' },
@@ -96,13 +98,13 @@ export default function Navbar() {
             {/* Right - Account & Cart */}
             <div className="flex items-center justify-end gap-5">
               <Link
-                to="/profile"
+                to={isLoggedIn ? "/profile" : "/login"}
                 className="flex items-center gap-2 text-espresso-900 hover:text-espresso-600 transition-colors duration-300"
-                aria-label="Account"
+                aria-label={isLoggedIn ? "Account" : "Sign In"}
               >
                 <User size={18} strokeWidth={1.5} />
                 <span className="hidden lg:inline text-xs tracking-[0.15em] uppercase font-medium">
-                  {t('nav.account')}
+                  {isLoggedIn ? (user?.firstName || t('nav.account')) : (language === 'ko' ? '로그인' : 'Sign In')}
                 </span>
               </Link>
               <Link
@@ -187,6 +189,12 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+              <Link
+                to={isLoggedIn ? "/profile" : "/login"}
+                className="block text-sm tracking-[0.15em] uppercase font-medium text-espresso-900 py-2 border-b border-stone-200/60"
+              >
+                {isLoggedIn ? (user?.firstName ? `${user.firstName} (Account)` : t('nav.account')) : (language === 'ko' ? '로그인 / 회원가입' : 'Sign In / Register')}
+              </Link>
               <div className="flex items-center justify-between pt-2">
                 <span className="text-xs uppercase text-stone-500">Language / 언어</span>
                 <div className="flex items-center text-xs font-semibold border border-stone-300 bg-white">

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   User,
   MapPin,
@@ -12,26 +12,69 @@ import {
   Check,
   Truck,
   Calendar,
+  ArrowRight,
 } from 'lucide-react'
 import { useLanguage } from '../context/LanguageContext'
+import { useAuth } from '../context/AuthContext'
 
 type Tab = 'profile' | 'addresses' | 'orders' | 'wishlist'
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState<Tab>('profile')
   const [isEditing, setIsEditing] = useState(false)
+  const navigate = useNavigate()
+  const { user, isLoggedIn, logout } = useAuth()
   const { language } = useLanguage()
   const isKo = language === 'ko'
 
   const [formData, setFormData] = useState({
-    firstName: 'Juan Dela',
-    lastName: 'Cruz',
-    email: 'juan@email.com',
-    phone: '+63 969 265 4976',
+    firstName: user?.firstName || 'Juan Dela',
+    lastName: user?.lastName || 'Cruz',
+    email: user?.email || 'juan@email.com',
+    phone: user?.phone || '+63 969 265 4976',
     birthDate: 'January 15, 1995',
     memberSince: 'September 2026',
-    membershipTier: 'Clubhouse Gold Member',
+    membershipTier: user?.memberTier || 'Clubhouse Gold Member',
   })
+
+  if (!isLoggedIn) {
+    return (
+      <div className="bg-[#FAF7F2] min-h-[calc(100vh-140px)] py-16">
+        <div className="container-luxury max-w-xl text-center">
+          <div className="w-16 h-16 rounded-full bg-stone-200/80 flex items-center justify-center mx-auto mb-6 text-espresso-900 shadow-2xs">
+            <User size={30} strokeWidth={1.5} />
+          </div>
+          <span className="inline-block bg-[#E65100] text-white text-[11px] font-bold tracking-[0.14em] uppercase px-3 py-1 mb-3">
+            {isKo ? '게스트 모드' : 'Guest Browsing Mode'}
+          </span>
+          <h1 className="font-luxury text-3xl sm:text-4xl text-espresso-900 mb-3">
+            {isKo ? '게스트로 이용 중입니다' : 'You are Browsing as a Guest'}
+          </h1>
+          <p className="text-stone-600 text-sm leading-relaxed mb-8 max-w-md mx-auto">
+            {isKo
+              ? '홀인허브의 모든 골프웨어, 파크골프 장비, 식음료(GrabFood) 메뉴를 로그인 없이 자유롭게 둘러보실 수 있습니다. 회원 전용 혜택을 이용하시려면 로그인해 주세요.'
+              : 'All collections, tournament equipment drops, and clubhouse dining are open for public browsing without an account. Sign in to access your saved clubhouse locker and member perks.'}
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              to="/login"
+              className="h-12 px-7 w-full sm:w-auto bg-[#181512] hover:bg-black text-white text-xs font-bold tracking-[0.14em] uppercase flex items-center justify-center gap-2 transition-all shadow-xs"
+            >
+              <span>{isKo ? '클럽하우스 로그인' : 'Sign In to Account'}</span>
+              <ArrowRight size={14} />
+            </Link>
+            <Link
+              to="/shop"
+              className="h-12 px-7 w-full sm:w-auto bg-white hover:bg-stone-50 border border-stone-300 text-espresso-900 text-xs font-bold tracking-[0.14em] uppercase flex items-center justify-center gap-2 transition-all shadow-xs"
+            >
+              <span>{isKo ? '쇼핑 계속하기' : 'Continue Shopping'}</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const sidebarItems = [
     { id: 'profile' as Tab, name: isKo ? '내 프로필' : 'My Profile', icon: User },
@@ -107,13 +150,16 @@ export default function Profile() {
 
                 <div className="my-2 h-px bg-stone-100" />
 
-                <Link
-                  to="/login"
-                  className="w-full flex items-center gap-3 px-4 py-3 text-xs tracking-wider uppercase font-semibold text-[#D85A2A] hover:bg-[#D85A2A]/10 transition-colors"
+                <button
+                  onClick={() => {
+                    logout()
+                    navigate('/')
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-xs tracking-wider uppercase font-semibold text-[#D85A2A] hover:bg-[#D85A2A]/10 transition-colors cursor-pointer text-left"
                 >
                   <LogOut size={15} />
                   {isKo ? '로그아웃' : 'Sign Out'}
-                </Link>
+                </button>
               </nav>
             </div>
           </div>
