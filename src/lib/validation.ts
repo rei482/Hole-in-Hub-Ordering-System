@@ -34,7 +34,7 @@ export const checkoutSchema = z.object({
   city: z.string().min(2, 'City is required'),
   postalCode: z.string().min(4, 'Postal code is required'),
   shippingMethod: z.enum(['standard', 'express']),
-  paymentMethod: z.enum(['gcash', 'maya', 'card', 'cod']),
+  paymentMethod: z.enum(['gcash', 'maya', 'cod']),
   notes: z.string().optional(),
 })
 

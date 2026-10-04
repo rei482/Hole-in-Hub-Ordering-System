@@ -8,6 +8,7 @@ export interface Product {
   categoryLabel: string
   categoryLabelKo?: string
   image: string
+  gallery?: string[]
   rating: number
   reviews: number
   badge?: string
@@ -94,6 +95,11 @@ export const products: Product[] = [
     specs: '320GSM Fleece • YKK Zip • Embroidered Crest',
     specsKo: '320GSM 헤비 플리스 • YKK 황동 지퍼 • 자수 크레스트',
     image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=800&h=800&fit=crop',
+    ],
     rating: 5.0,
     reviews: 77,
     description: 'Engineered for twilight rounds and clubhouse relaxation. Built from heavyweight 320GSM brushed fleece with a custom antique brass YKK zipper and the signature Hole in Hub embroidered crest on the left chest.',
@@ -116,6 +122,11 @@ export const products: Product[] = [
     specs: 'Cabretta Leather • Perforated Airflow • Left & Right',
     specsKo: '최고급 카브레타 가죽 • 에어홀 통기성 • 좌/우 선택',
     image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1593111774642-a16086782559?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1592919505780-303950717480?w=800&h=800&fit=crop',
+    ],
     rating: 4.9,
     reviews: 311,
     description: 'Ultra-soft AAA premium Cabretta leather offers maximum tactile feel, moisture resistance, and exceptional grip in all weather conditions. Precision laser perforations keep your hands cool through all 18 holes.',
@@ -138,6 +149,11 @@ export const products: Product[] = [
     specs: '3 Park Golf Balls • Tee Pouch • Enamel Pin',
     specsKo: '공인 파크골프공 3구 • 왁스 캔버스 파우치 • 황동 핀',
     image: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1530053969600-caed2596d242?auto=format&fit=crop&w=800&q=80',
+    ],
     rating: 5.0,
     reviews: 88,
     description: 'The definitive set for park golf enthusiasts and weekend linksmen. Includes three tournament-grade high-visibility balls, a water-resistant waxed canvas tee pouch, and a collectible Hole in Hub brass enamel lapel pin.',
@@ -161,6 +177,11 @@ export const products: Product[] = [
     specs: '4-Way Stretch • UPF 50+ UV Guard • Anti-Odor',
     specsKo: '4방향 신축성 • 자외선 차단 UPF 50+ • 항균 방취',
     image: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&h=800&fit=crop',
+    ],
     rating: 4.9,
     reviews: 142,
     description: 'Tailored for optimal swing rotation without bunching. Featuring a technical poly-spandex blend that actively wicks moisture and shields against high-altitude UV rays during daytime play.',
@@ -183,6 +204,11 @@ export const products: Product[] = [
     specs: '100% Washed Twill • Brass Clasp • Low Crown',
     specsKo: '100% 워싱 코튼 트윌 • 황동 조절 버클 • 로우 크라운',
     image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?w=800&h=800&fit=crop',
+    ],
     rating: 4.8,
     reviews: 95,
     description: 'An essential relaxed profile hat constructed from pigment-dyed washed cotton twill. Features our tonal hole-and-flag embroidery with an adjustable brass slider strap.',
@@ -205,6 +231,11 @@ export const products: Product[] = [
     specs: 'Water-Repellent Ripstop • Breathable Mesh • Chin Cord',
     specsKo: '발수 립스탑 소재 • 메쉬 통기 안감 • 조절용 턱끈',
     image: 'https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1521369909029-2afed882baee?w=800&h=800&fit=crop',
+    ],
     rating: 4.9,
     reviews: 64,
     description: 'Designed for unexpected morning showers and intense fairway sun. Wide brim provides 360-degree coverage with a detachable reflective chin cord and moisture-wicking internal headband.',
@@ -226,6 +257,11 @@ export const products: Product[] = [
     specs: 'Full-Grain Leather Trim • 5-Way Divider • Carbon Legs',
     specsKo: '천연 풀그레인 가죽 트림 • 5분할 디바이더 • 카본 스탠드 다리',
     image: 'https://images.unsplash.com/photo-1592919505780-303950717480?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1592919505780-303950717480?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1593111774642-a16086782559?w=800&h=800&fit=crop',
+    ],
     rating: 5.0,
     reviews: 34,
     description: 'Crafted with premium water-resistant matte nylon and vegetable-tanned full-grain leather accents. Features ultra-lightweight carbon fiber stand legs, an insulated beverage pocket, and velour-lined valuables pouch.',
@@ -247,6 +283,11 @@ export const products: Product[] = [
     specs: 'CNC Milled Solid Brass • Magnetic Marker • Custom Tin',
     specsKo: 'CNC 정밀 가공 솔리드 황동 • 마그네틱 코인 볼마커 • 틴 케이스',
     image: 'https://images.unsplash.com/photo-1530053969600-caed2596d242?auto=format&fit=crop&w=800&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1530053969600-caed2596d242?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1592919505780-303950717480?w=800&h=800&fit=crop',
+    ],
     rating: 4.9,
     reviews: 120,
     description: 'Solid billet brass CNC milled to ergonomic perfection. Features a dual-prong green repair tool and a heavy magnetic coin ball marker stamped with the Hole in Hub crest.',
@@ -268,6 +309,11 @@ export const products: Product[] = [
     specs: 'Jacquard Knit Mesh • Moisture Wicking • Tailored Fit',
     specsKo: '자카드 니트 메쉬 • 쾌적한 땀 배출 • 슬림 테일러드 핏',
     image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=800&fit=crop',
+    gallery: [
+      'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=800&h=800&fit=crop',
+    ],
     rating: 4.8,
     reviews: 58,
     description: 'Vintage collegiate striping meets cutting-edge micro-mesh knit. Breathable, odor-resistant, and cut with a modern tapered silhouette that stays tucked into trousers through full swings.',

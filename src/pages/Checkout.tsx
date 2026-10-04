@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   MapPin,
-  CreditCard,
+  Wallet,
   ClipboardList,
   Truck,
   Check,
@@ -12,7 +12,7 @@ import { cartItems, categories } from '../data/products'
 
 const steps = [
   { id: 1, name: 'Delivery Information', icon: MapPin },
-  { id: 2, name: 'Shipping & Payment', icon: CreditCard },
+  { id: 2, name: 'Shipping & Payment', icon: Wallet },
   { id: 3, name: 'Order Summary', icon: ClipboardList },
   { id: 4, name: 'Track Order', icon: Truck },
 ]
@@ -281,21 +281,6 @@ export default function Checkout() {
                         </p>
                         <p className="text-xs text-stone-400">
                           Pay via Maya digital wallet
-                        </p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-4 p-4 border border-stone-200 cursor-pointer hover:border-stone-400 transition-colors">
-                      <input
-                        type="radio"
-                        name="payment"
-                        className="accent-espresso-900"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-espresso-900">
-                          Credit / Debit Card
-                        </p>
-                        <p className="text-xs text-stone-400">
-                          Visa, Mastercard, JCB
                         </p>
                       </div>
                     </label>

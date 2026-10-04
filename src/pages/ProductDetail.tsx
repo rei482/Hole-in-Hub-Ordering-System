@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   Star,
@@ -14,7 +14,7 @@ import {
   RotateCcw,
   Check,
 } from 'lucide-react'
-import { products, categories } from '../data/products'
+import { products, categories, type Product } from '../data/products'
 import ProductCard from '../components/ProductCard'
 import { useLanguage } from '../context/LanguageContext'
 
@@ -27,18 +27,29 @@ export default function ProductDetail() {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isAdded, setIsAdded] = useState(false)
+  const [kitNotification, setKitNotification] = useState<string | null>(null)
+
+  // Reset view and scroll to top when product changes
+  useEffect(() => {
+    setActiveImageIndex(0)
+    setSelectedSize(product.sizes?.[0] || 'M')
+    setQuantity(1)
+    setIsAdded(false)
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [id, product])
 
   const relatedProducts = products
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 3)
 
-  const galleryImages = [
-    product.image,
-    'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=800&q=80',
-  ]
+  const galleryImages =
+    product.gallery && product.gallery.length > 0
+      ? product.gallery
+      : [product.image]
 
-  const categoryName = categories.find((c) => c.id === product.category)?.name || product.categoryLabel
+  const categoryName =
+    categories.find((c) => c.id === product.category)?.name ||
+    product.categoryLabel
 
   const handleAddToCart = () => {
     setIsAdded(true)
@@ -81,7 +92,7 @@ export default function ProductDetail() {
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 onError={(e) => {
-                  e.currentTarget.src = 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=800&q=80'
+                  e.currentTarget.src = product.image
                 }}
               />
 
@@ -123,8 +134,8 @@ export default function ProductDetail() {
                   onClick={() => setActiveImageIndex(idx)}
                   className={`w-20 h-20 bg-stone-100 overflow-hidden border-2 transition-all duration-300 cursor-pointer ${
                     idx === activeImageIndex
-                      ? 'border-espresso-900'
-                      : 'border-transparent hover:border-stone-300'
+                      ? 'border-espresso-900 ring-2 ring-espresso-900/20'
+                      : 'border-transparent hover:border-stone-300 opacity-70 hover:opacity-100'
                   }`}
                 >
                   <img
@@ -132,7 +143,7 @@ export default function ProductDetail() {
                     alt={`${product.name} view ${idx + 1}`}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=800&q=80'
+                      e.currentTarget.src = product.image
                     }}
                   />
                 </button>
@@ -314,17 +325,39 @@ export default function ProductDetail() {
         {/* Related Drops */}
         {relatedProducts.length > 0 && (
           <div className="mt-20 border-t border-stone-200 pt-12">
-            <h2 className="font-luxury text-2xl lg:text-3xl text-espresso-900 mb-8">
-              Complete Your Kit
-            </h2>
+            <div className="mb-8">
+              <h2 className="font-luxury text-2xl lg:text-3xl text-espresso-900 mb-1">
+                Complete Your Kit
+              </h2>
+              <p className="text-xs text-stone-500">
+                Recommended gear and accessories to pair with your selection
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedProducts.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  onAddToCart={(item) => {
+                    setKitNotification(`${item.name} added to your bag`)
+                    setTimeout(() => setKitNotification(null), 3000)
+                  }}
+                />
               ))}
             </div>
           </div>
         )}
       </div>
+
+      {/* Floating Toast Notification */}
+      {kitNotification && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#181512] text-white px-5 py-3.5 shadow-2xl flex items-center gap-3 border border-stone-700 animate-fade-in-up">
+          <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs">
+            ✓
+          </div>
+          <span className="text-xs tracking-wide font-medium">{kitNotification}</span>
+        </div>
+      )}
     </div>
   )
 }

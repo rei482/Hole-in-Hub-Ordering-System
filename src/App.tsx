@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 import Shop from './pages/Shop'
 import ProductDetail from './pages/ProductDetail'
@@ -13,7 +14,9 @@ import FoodBeverage from './pages/FoodBeverage'
 
 function App() {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route element={<Layout />}>
@@ -28,6 +31,7 @@ function App() {
         <Route path="/about" element={<About />} />
       </Route>
     </Routes>
+    </>
   )
 }
 
